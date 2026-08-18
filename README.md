@@ -19,12 +19,4 @@ flutter pub get
 flutter run
 ```
 
-## Check the project
-
-```sh
-flutter analyze
-flutter test
-```
-
-The local product photo comes from Unsplash, and Suwannaphum is distributed by
-Google Fonts under the SIL Open Font License.
+The local product photo comes from Unsplash, and Suwannaphum is distributed by Google Fonts.
