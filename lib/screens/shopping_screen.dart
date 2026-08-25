@@ -1,6 +1,6 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/product.dart';
 import '../widgets/featured_images_section.dart';
 import '../widgets/hot_offer_tile.dart';
@@ -9,16 +9,25 @@ import '../widgets/product_card.dart';
 import '../widgets/product_carousel.dart';
 import '../widgets/section_title.dart';
 
+/// Shows the responsive product catalog, carousel, cart state, and hot offers.
 class ShoppingScreen extends StatefulWidget {
-  const ShoppingScreen({super.key});
+  const ShoppingScreen({required this.onLocaleChanged, super.key});
+
+  /// Updates the locale stored by the root application widget.
+  final ValueChanged<Locale> onLocaleChanged;
 
   @override
   State<ShoppingScreen> createState() => _ShoppingScreenState();
 }
 
 class _ShoppingScreenState extends State<ShoppingScreen> {
+  // The selected carousel page controls the active dot indicator.
   int _currentCarouselPage = 0;
 
+  // A set prevents the same product from being counted more than once.
+  final Set<int> _cartProductIndexes = <int>{};
+
+  // Images are shared by the carousel, product grid, and offers list.
   final List<String> _imageUrls = const [
     'https://images.unsplash.com/photo-1505740420928-5e560c06d30e',
     'https://images.unsplash.com/photo-1542291026-7eec264c27ff',
@@ -27,46 +36,66 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     'https://images.unsplash.com/photo-1516035069371-29a1b244cc32',
   ];
 
-  List<Product> _createProducts() {
-    // Product names are rebuilt when the user changes the language.
+  /// Builds localized products again whenever the selected language changes.
+  List<Product> _createProducts(AppLocalizations localizations) {
     return [
       Product(
-        name: context.tr('productHeadphones'),
+        name: localizations.productHeadphones,
         price: 79.99,
         imageUrl: _imageUrls[0],
       ),
       Product(
-        name: context.tr('productShoes'),
+        name: localizations.productShoes,
         price: 64.50,
         imageUrl: _imageUrls[1],
       ),
       Product(
-        name: context.tr('productWatch'),
+        name: localizations.productWatch,
         price: 119.00,
         imageUrl: _imageUrls[2],
       ),
       Product(
-        name: context.tr('productBackpack'),
+        name: localizations.productBackpack,
         price: 49.99,
         imageUrl: _imageUrls[3],
       ),
       Product(
-        name: context.tr('productCamera'),
+        name: localizations.productCamera,
         price: 249.00,
         imageUrl: _imageUrls[4],
       ),
     ];
   }
 
-  void _addToCart() {
+  /// Adds a new product or removes it when the same button is pressed again.
+  void _toggleCart(int productIndex, AppLocalizations localizations) {
+    final isRemoving = _cartProductIndexes.contains(productIndex);
+
+    setState(() {
+      if (isRemoving) {
+        _cartProductIndexes.remove(productIndex);
+      } else {
+        _cartProductIndexes.add(productIndex);
+      }
+    });
+
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(context.tr('itemAddedToCart'))));
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            isRemoving
+                ? localizations.itemRemovedFromCart
+                : localizations.itemAddedToCart,
+          ),
+        ),
+      );
   }
 
   @override
   Widget build(BuildContext context) {
-    final products = _createProducts();
+    final localizations = AppLocalizations.of(context)!;
+    final products = _createProducts(localizations);
     final screenSize = MediaQuery.of(context).size;
     final horizontalPadding = screenSize.width > 800 ? 80.0 : 16.0;
     final carouselHeight = screenSize.width < 400 ? 180.0 : 220.0;
@@ -74,8 +103,21 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(context.tr('shoppingPageTitle')),
-        actions: const [LanguageButton()],
+        title: Text(localizations.shoppingPageTitle),
+        actions: [
+          Center(
+            child: Tooltip(
+              message: localizations.cartTooltip,
+              child: Badge(
+                key: const Key('cartBadge'),
+                label: Text(_cartProductIndexes.length.toString()),
+                child: const Icon(Icons.shopping_cart_outlined),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          LanguageButton(onLocaleChanged: widget.onLocaleChanged),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -89,13 +131,13 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
             children: [
               const FeaturedImagesSection(),
               const SizedBox(height: 28),
-              SectionTitle(context.tr('ourProducts')),
+              SectionTitle(localizations.ourProducts),
               const SizedBox(height: 12),
               SizedBox(
                 height: carouselHeight,
                 child: ProductCarousel(
                   products: products,
-                  errorMessage: context.tr('imageLoadError'),
+                  errorMessage: localizations.imageLoadError,
                   onPageChanged: (page) {
                     setState(() => _currentCarouselPage = page);
                   },
@@ -138,18 +180,19 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                   final product = products[index];
                   return ProductCard(
                     product: product,
-                    formattedPrice: context.tr(
-                      'productPrice',
-                      namedArgs: {'price': product.price.toStringAsFixed(2)},
+                    formattedPrice: localizations.productPrice(
+                      product.price.toStringAsFixed(2),
                     ),
-                    addToCartTooltip: context.tr('addToCartTooltip'),
-                    errorMessage: context.tr('imageLoadError'),
-                    onAddToCart: _addToCart,
+                    addToCartTooltip: localizations.addToCartTooltip,
+                    removeFromCartTooltip: localizations.removeFromCartTooltip,
+                    errorMessage: localizations.imageLoadError,
+                    isInCart: _cartProductIndexes.contains(index),
+                    onCartPressed: () => _toggleCart(index, localizations),
                   );
                 },
               ),
               const SizedBox(height: 28),
-              SectionTitle(context.tr('hotOffers')),
+              SectionTitle(localizations.hotOffers),
               const SizedBox(height: 12),
               ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
@@ -159,12 +202,9 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                   final product = products[index];
                   return HotOfferTile(
                     product: product,
-                    title: context.tr(
-                      'hotOfferName',
-                      namedArgs: {'product': product.name},
-                    ),
-                    description: context.tr('hotOfferDescription'),
-                    errorMessage: context.tr('imageLoadError'),
+                    title: localizations.hotOfferName(product.name),
+                    description: localizations.hotOfferDescription,
+                    errorMessage: localizations.imageLoadError,
                   );
                 },
               ),

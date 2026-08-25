@@ -1,19 +1,44 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import 'l10n/app_localizations.dart';
 import 'screens/sign_up_page.dart';
 
-class ShoppingApp extends StatelessWidget {
-  const ShoppingApp({super.key});
+/// Configures the application theme, localization, and first screen.
+///
+/// Locale state lives here so both screens can switch between English and
+/// Arabic without using an additional state-management package.
+class ShoppingApp extends StatefulWidget {
+  const ShoppingApp({super.key, this.initialLocale});
+
+  /// Allows widget tests to start in a predictable language.
+  final Locale? initialLocale;
+
+  @override
+  State<ShoppingApp> createState() => _ShoppingAppState();
+}
+
+class _ShoppingAppState extends State<ShoppingApp> {
+  Locale? _selectedLocale;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedLocale = widget.initialLocale;
+  }
+
+  /// Rebuilds [MaterialApp] with the language selected by the user.
+  void _changeLocale(Locale locale) {
+    setState(() => _selectedLocale = locale);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      onGenerateTitle: (context) => context.tr('appTitle'),
-      locale: context.locale,
-      supportedLocales: context.supportedLocales,
-      localizationsDelegates: context.localizationDelegates,
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+      locale: _selectedLocale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: ThemeData(
         useMaterial3: true,
         fontFamily: 'Suwannaphum-Regular',
@@ -23,7 +48,7 @@ class ShoppingApp extends StatelessWidget {
           filled: true,
         ),
       ),
-      home: const SignUpPage(),
+      home: SignUpPage(onLocaleChanged: _changeLocale),
     );
   }
 }

@@ -3,21 +3,33 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import 'product_image.dart';
 
+/// Presents a product and exposes one button for adding or removing it.
 class ProductCard extends StatelessWidget {
   const ProductCard({
     required this.product,
     required this.formattedPrice,
     required this.addToCartTooltip,
+    required this.removeFromCartTooltip,
     required this.errorMessage,
-    required this.onAddToCart,
+    required this.isInCart,
+    required this.onCartPressed,
     super.key,
   });
 
+  /// Product data displayed by this card.
   final Product product;
+
+  /// Price after locale-specific formatting has been applied.
   final String formattedPrice;
   final String addToCartTooltip;
+  final String removeFromCartTooltip;
   final String errorMessage;
-  final VoidCallback onAddToCart;
+
+  /// Selects the add or remove icon and its matching tooltip.
+  final bool isInCart;
+
+  /// Delegates the cart state change to the parent shopping screen.
+  final VoidCallback onCartPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -54,10 +66,14 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  tooltip: addToCartTooltip,
+                  tooltip: isInCart ? removeFromCartTooltip : addToCartTooltip,
                   visualDensity: VisualDensity.compact,
-                  onPressed: onAddToCart,
-                  icon: const Icon(Icons.add_shopping_cart),
+                  onPressed: onCartPressed,
+                  icon: Icon(
+                    isInCart
+                        ? Icons.remove_shopping_cart
+                        : Icons.add_shopping_cart,
+                  ),
                 ),
               ],
             ),

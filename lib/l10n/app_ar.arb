@@ -1,4 +1,5 @@
 {
+  "@@locale": "ar",
   "appTitle": "مشروعي الأول",
   "signUpTitle": "إنشاء حساب",
   "shoppingPageTitle": "مشروعي الأول",
@@ -22,7 +23,10 @@
   "hotOffers": "عروض مميزة",
   "imagesDisplayed": "تم عرض الصورتين",
   "addToCartTooltip": "أضف إلى السلة",
+  "removeFromCartTooltip": "إزالة من السلة",
   "itemAddedToCart": "تمت إضافة المنتج إلى السلة",
+  "itemRemovedFromCart": "تمت إزالة المنتج من السلة",
+  "cartTooltip": "سلة التسوق",
   "changeLanguageTooltip": "تغيير اللغة",
   "productHeadphones": "سماعات لاسلكية",
   "productShoes": "حذاء رياضي",

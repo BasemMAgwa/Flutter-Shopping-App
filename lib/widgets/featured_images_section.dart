@@ -1,17 +1,21 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import 'product_image.dart';
 
+/// Implements the first SRS phase with one asset and one network image.
 class FeaturedImagesSection extends StatelessWidget {
   const FeaturedImagesSection({super.key});
 
+  // This URL supplies the online image required alongside the asset image.
   static const _onlineImageUrl =
       'https://images.unsplash.com/photo-1523275335684-37898b6baf30'
       '?auto=format&fit=crop&w=900&q=80';
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         Row(
@@ -25,7 +29,7 @@ class FeaturedImagesSection extends StatelessWidget {
                     'assets/images/local_product.jpg',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
-                        Center(child: Text(context.tr('imageLoadError'))),
+                        Center(child: Text(localizations.imageLoadError)),
                   ),
                 ),
               ),
@@ -36,7 +40,7 @@ class FeaturedImagesSection extends StatelessWidget {
                 aspectRatio: 1.25,
                 child: ProductImage(
                   imageUrl: _onlineImageUrl,
-                  errorMessage: context.tr('imageLoadError'),
+                  errorMessage: localizations.imageLoadError,
                 ),
               ),
             ),
@@ -44,7 +48,7 @@ class FeaturedImagesSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          context.tr('imagesDisplayed'),
+          localizations.imagesDisplayed,
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontFamily: 'Suwannaphum-Regular',

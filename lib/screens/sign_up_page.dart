@@ -1,19 +1,26 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quick_nav/flutter_quick_nav.dart';
 
+import '../l10n/app_localizations.dart';
 import '../widgets/language_button.dart';
 import 'shopping_screen.dart';
 
+/// Collects and validates the information required to create an account.
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  const SignUpPage({required this.onLocaleChanged, super.key});
+
+  /// Updates the application locale when the language button is pressed.
+  final ValueChanged<Locale> onLocaleChanged;
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  // The form key lets the submit button run all field validators together.
   final _formKey = GlobalKey<FormState>();
+
+  // Controllers provide access to input values and must be disposed later.
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -21,6 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
+  /// Creates one consistent decoration for every sign-up input.
   InputDecoration _inputDecoration({
     required String label,
     String? hint,
@@ -65,6 +73,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+  /// Releases the resources held by the four text controllers.
   @override
   void dispose() {
     _nameController.dispose();
@@ -74,40 +83,53 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
+  /// Requires a value whose first Latin letter is uppercase.
+  ///
+  /// Arabic letters are accepted because Arabic does not have letter casing.
   String? _validateName(String? value) {
+    final localizations = AppLocalizations.of(context)!;
     final name = value?.trim() ?? '';
-    if (name.isEmpty) return context.tr('fieldRequired');
+    if (name.isEmpty) return localizations.fieldRequired;
     if (!RegExp(r'^[A-Z\u0600-\u06FF]').hasMatch(name)) {
-      return context.tr('nameCapitalError');
+      return localizations.nameCapitalError;
     }
     return null;
   }
 
+  /// Applies the email rule required by the project specification.
   String? _validateEmail(String? value) {
+    final localizations = AppLocalizations.of(context)!;
     final email = value?.trim() ?? '';
-    if (email.isEmpty) return context.tr('fieldRequired');
-    if (!email.contains('@')) return context.tr('emailError');
+    if (email.isEmpty) return localizations.fieldRequired;
+    if (!email.contains('@')) return localizations.emailError;
     return null;
   }
 
+  /// Requires a non-empty password containing at least six characters.
   String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) return context.tr('fieldRequired');
-    if (value.length < 6) return context.tr('passwordLengthError');
+    final localizations = AppLocalizations.of(context)!;
+    if (value == null || value.isEmpty) return localizations.fieldRequired;
+    if (value.length < 6) return localizations.passwordLengthError;
     return null;
   }
 
+  /// Ensures the confirmation contains exactly the original password.
   String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) return context.tr('fieldRequired');
+    final localizations = AppLocalizations.of(context)!;
+    if (value == null || value.isEmpty) return localizations.fieldRequired;
     if (value != _passwordController.text) {
-      return context.tr('passwordMismatchError');
+      return localizations.passwordMismatchError;
     }
     return null;
   }
 
+  /// Validates the form, shows confirmation, then opens the shopping screen.
   Future<void> _createAccount() async {
     FocusScope.of(context).unfocus();
     // Only show the success dialog when every field is valid.
     if (!_formKey.currentState!.validate()) return;
+
+    final localizations = AppLocalizations.of(context)!;
 
     await showDialog<void>(
       context: context,
@@ -123,7 +145,7 @@ class _SignUpPageState extends State<SignUpPage> {
             color: Theme.of(context).colorScheme.primary,
           ),
           title: Text(
-            context.tr('accountCreated'),
+            localizations.accountCreated,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -140,7 +162,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 onPressed: () => Navigator.pop(dialogContext),
-                child: Text(context.tr('continueButton')),
+                child: Text(localizations.continueButton),
               ),
             ),
           ],
@@ -151,15 +173,16 @@ class _SignUpPageState extends State<SignUpPage> {
     if (!mounted) return;
     FlutterQuickNav.push(
       context,
-      const ShoppingScreen(),
+      ShoppingScreen(onLocaleChanged: widget.onLocaleChanged),
       type: TransitionType.fade,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final screenWidth = MediaQuery.of(context).size.width;
     final colors = Theme.of(context).colorScheme;
 
@@ -168,8 +191,8 @@ class _SignUpPageState extends State<SignUpPage> {
       appBar: AppBar(
         backgroundColor: colors.primary,
         foregroundColor: colors.onPrimary,
-        title: Text(context.tr('signUpTitle')),
-        actions: const [LanguageButton()],
+        title: Text(localizations.signUpTitle),
+        actions: [LanguageButton(onLocaleChanged: widget.onLocaleChanged)],
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -186,8 +209,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     controller: _nameController,
                     validator: _validateName,
                     decoration: _inputDecoration(
-                      label: context.tr('fullNameLabel'),
-                      hint: context.tr('fullNameHint'),
+                      label: localizations.fullNameLabel,
+                      hint: localizations.fullNameHint,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -197,8 +220,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     validator: _validateEmail,
                     keyboardType: TextInputType.emailAddress,
                     decoration: _inputDecoration(
-                      label: context.tr('emailLabel'),
-                      hint: context.tr('emailHint'),
+                      label: localizations.emailLabel,
+                      hint: localizations.emailHint,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -208,13 +231,11 @@ class _SignUpPageState extends State<SignUpPage> {
                     validator: _validatePassword,
                     obscureText: !_isPasswordVisible,
                     decoration: _inputDecoration(
-                      label: context.tr('passwordLabel'),
+                      label: localizations.passwordLabel,
                       suffixIcon: IconButton(
-                        tooltip: context.tr(
-                          _isPasswordVisible
-                              ? 'hidePasswordTooltip'
-                              : 'showPasswordTooltip',
-                        ),
+                        tooltip: _isPasswordVisible
+                            ? localizations.hidePasswordTooltip
+                            : localizations.showPasswordTooltip,
                         onPressed: () {
                           setState(() {
                             _isPasswordVisible = !_isPasswordVisible;
@@ -235,13 +256,11 @@ class _SignUpPageState extends State<SignUpPage> {
                     validator: _validateConfirmPassword,
                     obscureText: !_isConfirmPasswordVisible,
                     decoration: _inputDecoration(
-                      label: context.tr('confirmPasswordLabel'),
+                      label: localizations.confirmPasswordLabel,
                       suffixIcon: IconButton(
-                        tooltip: context.tr(
-                          _isConfirmPasswordVisible
-                              ? 'hidePasswordTooltip'
-                              : 'showPasswordTooltip',
-                        ),
+                        tooltip: _isConfirmPasswordVisible
+                            ? localizations.hidePasswordTooltip
+                            : localizations.showPasswordTooltip,
                         onPressed: () {
                           setState(() {
                             _isConfirmPasswordVisible =
@@ -269,7 +288,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     onPressed: _createAccount,
-                    child: Text(context.tr('createAccount')),
+                    child: Text(localizations.createAccount),
                   ),
                 ],
               ),

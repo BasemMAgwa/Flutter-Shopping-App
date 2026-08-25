@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Provides a consistent heading style for shopping page sections.
 class SectionTitle extends StatelessWidget {
   const SectionTitle(this.title, {super.key});
 

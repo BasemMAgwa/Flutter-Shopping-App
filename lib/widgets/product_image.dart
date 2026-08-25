@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Loads a network product image with progress and failure placeholders.
 class ProductImage extends StatelessWidget {
   const ProductImage({
     required this.imageUrl,
@@ -22,10 +23,12 @@ class ProductImage extends StatelessWidget {
         height: double.infinity,
         fit: BoxFit.cover,
         loadingBuilder: (context, child, loadingProgress) {
+          // Flutter returns the completed image once progress becomes null.
           if (loadingProgress == null) return child;
           return const Center(child: CircularProgressIndicator());
         },
         errorBuilder: (context, error, stackTrace) {
+          // A localized fallback keeps failed requests understandable.
           return ColoredBox(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
             child: Center(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import 'product_image.dart';
 
+/// Displays one responsive hot-offer row with expanded image and text areas.
 class HotOfferTile extends StatelessWidget {
   const HotOfferTile({
     required this.product,
@@ -12,9 +13,16 @@ class HotOfferTile extends StatelessWidget {
     super.key,
   });
 
+  /// Supplies the image and localized product name.
   final Product product;
+
+  /// Localized offer heading.
   final String title;
+
+  /// Localized supporting description.
   final String description;
+
+  /// Localized fallback shown when the network request fails.
   final String errorMessage;
 
   @override

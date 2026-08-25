@@ -1,4 +1,5 @@
 {
+  "@@locale": "en",
   "appTitle": "My First Project",
   "signUpTitle": "Sign Up",
   "shoppingPageTitle": "My First Project",
@@ -22,7 +23,10 @@
   "hotOffers": "Hot Offers",
   "imagesDisplayed": "The two images are displayed",
   "addToCartTooltip": "Add to cart",
+  "removeFromCartTooltip": "Remove from cart",
   "itemAddedToCart": "Item added to the cart",
+  "itemRemovedFromCart": "Item removed from the cart",
+  "cartTooltip": "Shopping cart",
   "changeLanguageTooltip": "Change language",
   "productHeadphones": "Wireless Headphones",
   "productShoes": "Running Shoes",
@@ -30,7 +34,19 @@
   "productBackpack": "Travel Backpack",
   "productCamera": "Digital Camera",
   "productPrice": "\u0024{price}",
+  "@productPrice": {
+    "description": "Formats a product price in US dollars.",
+    "placeholders": {
+      "price": { "type": "String" }
+    }
+  },
   "hotOfferName": "Special offer: {product}",
+  "@hotOfferName": {
+    "description": "The heading for a discounted product.",
+    "placeholders": {
+      "product": { "type": "String" }
+    }
+  },
   "hotOfferDescription": "Limited-time price on this popular item.",
   "imageLoadError": "Image unavailable"
 }
